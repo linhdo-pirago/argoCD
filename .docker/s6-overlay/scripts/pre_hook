@@ -1,0 +1,13 @@
+#!/command/with-contenv sh
+
+php /app/artisan config:cache
+
+if [ "$APP_TYPE" = "web" ]; then \
+    rm -rf /etc/s6-overlay/s6-rc.d/user/contents.d/supervisor;
+fi
+
+if [ "$APP_TYPE" = "batch" ]; then \
+    rm -rf \
+    /etc/s6-overlay/s6-rc.d/user/contents.d/nginx \
+    /etc/s6-overlay/s6-rc.d/user/contents.d/php-fpm;
+fi

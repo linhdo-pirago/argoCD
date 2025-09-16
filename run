@@ -1,0 +1,12 @@
+#!/bin/bash
+
+IMAGE_NAME="hub.pirago.work/argocd:latest"
+
+docker rm -f $(docker ps -a -q --filter ancestor=$IMAGE_NAME)
+
+docker build -t $IMAGE_NAME .
+
+docker run --rm -d \
+  --name argocd \
+  -p 80:80 \
+  $IMAGE_NAME
