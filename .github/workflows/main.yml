@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - name: Checkout code
+      - name: Checkout main branch
         uses: actions/checkout@v3
 
       - name: Log in to Nexus Docker Registry
@@ -21,7 +21,7 @@ jobs:
           password: ${{ secrets.NEXUS_PASSWORD }}
 
       - name: Build and push Docker image
-        uses: docker/build-and-push-action@v5
+        uses: docker/build-push-action@v5 # Sửa lỗi chính tả
         with:
           context: .
           push: true
@@ -29,10 +29,11 @@ jobs:
 
       - name: Update Kubernetes manifest
         run: |
-          git checkout k8s
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout k8s || git checkout -b k8s # Sửa lỗi logic
+          git pull origin k8s
           sed -i "s|image: .*|image: ${{ secrets.NEXUS_REGISTRY }}/your-app:${{ github.sha }}|" ci-cd/k8s/base/deployment.yaml
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
           git add ci-cd/k8s/base/deployment.yaml
           git commit -m "chore: Update image tag to ${{ github.sha }}"
-          git push
+          git push origin k8s
