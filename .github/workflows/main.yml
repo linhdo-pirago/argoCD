@@ -21,17 +21,17 @@ jobs:
           password: ${{ secrets.NEXUS_PASSWORD }}
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v5 # Sửa lỗi chính tả
+        uses: docker/build-push-action@v5 
         with:
           context: .
           push: true
-          tags: ${{ secrets.NEXUS_REGISTRY }}/your-app:${{ github.sha }}
+          tags: ${{ secrets.NEXUS_REGISTRY }}/argocd:${{ github.sha }}
 
       - name: Update Kubernetes manifest
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git checkout k8s || git checkout -b k8s # Sửa lỗi logic
+          git checkout k8s || git checkout -b k8s 
           git pull origin k8s
           sed -i "s|image: .*|image: ${{ secrets.NEXUS_REGISTRY }}/your-app:${{ github.sha }}|" ci-cd/k8s/base/deployment.yaml
           git add ci-cd/k8s/base/deployment.yaml
