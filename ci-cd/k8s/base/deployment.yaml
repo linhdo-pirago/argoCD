@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: argocd
-        image: hub.pirago.work/argocd:latest
+        image: hub.testlab/argocd:latest
         ports:
         - containerPort: 80
         imagePullPolicy: Always
